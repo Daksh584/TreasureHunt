@@ -1,0 +1,10 @@
+node_modules
+.next
+.next-dev
+out
+.env*.local
+.env
+.vercel
+*.tsbuildinfo
+.DS_Store
+certificates

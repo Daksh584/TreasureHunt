@@ -1,0 +1,30 @@
+{
+  "name": "office-treasure-hunt",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:lan": "next dev -H 0.0.0.0",
+    "dev:https": "next dev -H 0.0.0.0 --experimental-https",
+    "build": "next build",
+    "start": "next start",
+    "gen-codes": "tsx scripts/gen-codes.ts",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.41.0",
+    "@zxing/browser": "^0.2.1",
+    "next": "^15.5.29",
+    "qrcode": "^1.5.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}
