@@ -9,6 +9,7 @@ import { store, StoreUnavailableError, type LogEvent } from "@/lib/store";
 import AdminForm from "@/components/AdminForm";
 import AdminNav, { AdminDenied, AdminMessage } from "@/components/AdminNav";
 import AutoRefresh from "@/components/AutoRefresh";
+import ConfigTodos from "@/components/ConfigTodos";
 import Elapsed from "@/components/Elapsed";
 import LocalTime from "@/components/LocalTime";
 import TrailChip from "@/components/TrailChip";
@@ -30,6 +31,7 @@ const RESULT_STYLE: Record<LogEvent["result"], { icon: string; tone: string }> =
   "not-started": { icon: "⏳", tone: "warn" },
   invalid: { icon: "🚫", tone: "bad" },
   "bad-join": { icon: "🔑", tone: "bad" },
+  "bad-word": { icon: "🔐", tone: "bad" },
   "rate-limited": { icon: "🐢", tone: "bad" },
 };
 
@@ -38,7 +40,7 @@ function describe(e: LogEvent): string {
   const owner = getTrackConfig(e.codeTrack)?.name;
   switch (e.result) {
     case "found":
-      return `found ${cp}`;
+      return `found ${cp}${e.via === "word" ? " (code word)" : ""}`;
     case "already":
       return `re-scanned ${cp} (already found)`;
     case "register":
@@ -46,7 +48,7 @@ function describe(e: LogEvent): string {
     case "join":
       return "a teammate joined";
     case "skip":
-      return `tried to skip ahead to ${cp}`;
+      return `tried to skip ahead${cp ? ` to ${cp}` : ""}`;
     case "wrong-track":
       return `scanned ${owner ?? "another trail"}’s ${cp}`;
     case "not-started":
@@ -57,6 +59,8 @@ function describe(e: LogEvent): string {
       return "scanned an unknown code";
     case "bad-join":
       return "tried a wrong team code";
+    case "bad-word":
+      return "typed a wrong code word";
     case "rate-limited":
       return "rate-limited (too many bad codes)";
   }
@@ -124,6 +128,7 @@ export default async function AdminPage({
       </header>
       {!tv && <AdminNav current="/admin" />}
       <AdminMessage m={first(sp.m)} />
+      {!tv && <ConfigTodos />}
 
       {!started && !tv && (
         <section className="control-strip admin-chrome">

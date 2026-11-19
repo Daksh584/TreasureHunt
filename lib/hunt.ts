@@ -1,4 +1,12 @@
-import { CHECKPOINTS_PER_TRACK, TRACK_IDS, huntConfig, type HuntConfig, type Track, type TrackId } from "@/hunt.config";
+import {
+  CHECKPOINTS_PER_TRACK,
+  TRACK_IDS,
+  huntConfig,
+  normalizeWord,
+  type HuntConfig,
+  type Track,
+  type TrackId,
+} from "@/hunt.config";
 
 /** A registered team. Many teams can share one track. */
 export type Team = {
@@ -181,4 +189,26 @@ export function rankTeams<T extends Pick<LeaderRow, "name" | "finished" | "finis
 export function placement(id: string, rows: LeaderRow[]): number | null {
   const i = rankTeams(rows.filter((r) => r.finished)).findIndex((r) => r.id === id);
   return i < 0 ? null : i + 1;
+}
+
+/* ---------- Code words ---------- */
+
+export type WordResult =
+  | { result: "found"; index: number }
+  | { result: "already"; index: number }
+  | { result: "skip" | "bad-word" | "not-started" | "no-word" };
+
+/**
+ * Decides a typed code word against the team's OWN trail only. A word from another trail is
+ * simply wrong (we never reveal that it belongs to someone else).
+ */
+export function decideWord(input: { word: string; track: Track; cps: (number | null)[]; started: boolean }): WordResult {
+  const word = normalizeWord(input.word);
+  if (!word) return { result: "no-word" };
+  if (!input.started) return { result: "not-started" };
+  const index = input.track.checkpoints.findIndex((cp) => cp.codeWord && normalizeWord(cp.codeWord) === word);
+  if (index < 0) return { result: "bad-word" };
+  if (input.cps[index] != null) return { result: "already", index };
+  if (progress(input.cps) < index) return { result: "skip" };
+  return { result: "found", index };
 }

@@ -5,6 +5,7 @@ import { TEAM_NAME_MAX, TEAM_NAME_MIN, formatJoinCode, progress } from "@/lib/hu
 import { isAdmin } from "@/lib/auth";
 import { store, StoreUnavailableError } from "@/lib/store";
 import AdminForm from "@/components/AdminForm";
+import ConfigTodos from "@/components/ConfigTodos";
 import AdminNav, { AdminDenied, AdminMessage } from "@/components/AdminNav";
 import LocalTime from "@/components/LocalTime";
 import Unavailable from "@/components/Unavailable";
@@ -46,6 +47,7 @@ export default async function TeamsPage({
       </header>
       <AdminNav current="/admin/teams" />
       <AdminMessage m={Array.isArray(m) ? m[0] : m} />
+      <ConfigTodos />
 
       <section className="trail-summary">
         {huntConfig.tracks.map((t) => {

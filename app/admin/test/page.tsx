@@ -7,6 +7,8 @@ import { currentTeam } from "@/lib/teams";
 import { store, StoreUnavailableError } from "@/lib/store";
 import AdminNav, { AdminDenied } from "@/components/AdminNav";
 import TrailChip from "@/components/TrailChip";
+import ConfigTodos, { Marked } from "@/components/ConfigTodos";
+import PrintButton from "@/components/PrintButton";
 import Unavailable from "@/components/Unavailable";
 
 export const dynamic = "force-dynamic";
@@ -35,7 +37,7 @@ export default async function DryRun({
       <header className="admin-head">
         <div>
           <p className="eyebrow">Organizer</p>
-          <h1>Dry run</h1>
+          <h1>Dry run &amp; run sheet</h1>
           <p className="admin-meta">
             This browser is playing as:{" "}
             {current ? (
@@ -47,20 +49,24 @@ export default async function DryRun({
             )}
           </p>
         </div>
-        <a className="button ghost" href="/play" target="_blank" rel="noreferrer">
-          Open /play ↗
-        </a>
+        <div className="btn-row admin-chrome">
+          <a className="button ghost" href="/play" target="_blank" rel="noreferrer">
+            Open /play ↗
+          </a>
+          <PrintButton />
+        </div>
       </header>
       <AdminNav current="/admin/test" />
       {left && <p className="banner banner-good">This browser has left its team.</p>}
+      <ConfigTodos open />
 
       <ol className="howto-list">
         <li>
           <a href="/register">Register a test team</a> (or join an existing one below). Note which trail it lands on.
         </li>
         <li>
-          Press <strong>🚀 Start hunt</strong> on the leaderboard, then click that trail’s checkpoints in order. Try
-          skipping one, or another trail’s link too.
+          Press <strong>🚀 Start hunt</strong> on the leaderboard, then click that trail’s checkpoints in order (or type
+          the code word on /play where a stop has one). Try skipping one, or another trail’s link too.
         </li>
         <li>
           When you’re done, go to <a href="/admin/teams">Teams &amp; setup</a> → <strong>Delete everything</strong> so the real
@@ -96,9 +102,17 @@ export default async function DryRun({
               {t.checkpoints.map((cp, i) => (
                 <li key={cp.code}>
                   <a href={`/s/${cp.code}`} rel="nofollow">
-                    Checkpoint {i + 1} — {cp.locationLabel}
+                    Checkpoint {i + 1} — <Marked text={cp.locationLabel} />
                   </a>
-                  <small>{cp.clue}</small>
+                  <small>
+                    <Marked text={cp.clue} />
+                  </small>
+                  {cp.codeWord && <span className="run-word">CODE WORD: {cp.codeWord}</span>}
+                  {cp.setup && (
+                    <span className="run-setup">
+                      🛠 <Marked text={cp.setup} />
+                    </span>
+                  )}
                 </li>
               ))}
             </ol>

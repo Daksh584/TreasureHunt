@@ -45,6 +45,10 @@ function banner(m: string | undefined, n: number | null, ctx: { next: number; tr
       return { tone: "warn", emoji: "⏳", text: "Sharp eyes! But the hunt hasn’t started yet — that scan didn’t count." };
     case "invalid":
       return { tone: "bad", emoji: "🤔", text: "Hmm, that QR code isn’t part of this hunt." };
+    case "bad-word":
+      return { tone: "bad", emoji: "🔐", text: "That code word didn’t work. Check the spelling with whoever gave it to you." };
+    case "word-slow":
+      return { tone: "bad", emoji: "🐢", text: "Too many wrong code words. Take a breath and try again in a minute." };
     case "no-team":
       return { tone: "warn", emoji: "📍", text: "Nice find! But this phone isn’t on a team yet — register or join one first." };
     case "slow":
@@ -169,6 +173,26 @@ export default async function PlayPage({
           {nextIndex === 0 && <p className="intro">{huntConfig.introText[track.id]}</p>}
           <p className="eyebrow">{nextIndex === 0 ? "Your first clue" : "Your next clue"}</p>
           <p className="clue-text">{track.checkpoints[nextIndex].clue}</p>
+          {track.checkpoints[nextIndex].codeWord && (
+            <form action="/play/word" method="post" className="word-form">
+              <label htmlFor="word">Got a code word?</label>
+              <div className="word-row">
+                <input
+                  id="word"
+                  name="word"
+                  required
+                  maxLength={32}
+                  autoComplete="off"
+                  autoCapitalize="characters"
+                  spellCheck={false}
+                  placeholder="Type it here"
+                />
+                <button className="button" type="submit">
+                  Unlock
+                </button>
+              </div>
+            </form>
+          )}
         </section>
 
         <section className="howto">

@@ -1,11 +1,12 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
-import { TRACK_IDS, huntConfig, validateConfig, type HuntConfig, type TrackId } from "@/hunt.config";
+import { TRACK_IDS, configTodos, huntConfig, validateConfig, type HuntConfig, type TrackId } from "@/hunt.config";
 import {
   assignTrack,
   buildRow,
   cleanTeamName,
   decideScan,
+  decideWord,
   findCode,
   normalizeJoinCode,
   placement,
@@ -52,6 +53,24 @@ describe("decideScan", () => {
   test("not-started: own-trail scan before the organizer starts the hunt", () => {
     assert.equal(scan("A", 0, empty(), false), "not-started");
     assert.equal(scan("B", 0, empty(), false), "wrong-track");
+  });
+});
+
+describe("decideWord", () => {
+  // Red trail: CP2 = CAPPUCCINO, CP5 = VICTORY. Green trail CP2 = MONARCH.
+  const red = huntConfig.tracks[0];
+  const word = (w: string, cps: (number | null)[], started = true) => decideWord({ word: w, track: red, cps, started });
+
+  test("found: current checkpoint's word, any case/spacing", () => {
+    assert.deepEqual(word("cappuccino", withFound(1)), { result: "found", index: 1 });
+    assert.deepEqual(word(" Cap-pu ccino ", withFound(1)), { result: "found", index: 1 });
+  });
+  test("already / skip / wrong / not started", () => {
+    assert.deepEqual(word("CAPPUCCINO", withFound(3)), { result: "already", index: 1 });
+    assert.deepEqual(word("VICTORY", withFound(2)), { result: "skip" });
+    assert.deepEqual(word("MONARCH", withFound(1)), { result: "bad-word" }, "another trail's word is just wrong");
+    assert.deepEqual(word("CAPPUCCINO", withFound(1), false), { result: "not-started" });
+    assert.deepEqual(word("  ", withFound(1)), { result: "no-word" });
   });
 });
 
@@ -214,6 +233,17 @@ describe("config", () => {
     assert.doesNotThrow(() => validateConfig(huntConfig));
     const codes = huntConfig.tracks.flatMap((t) => t.checkpoints.map((c) => c.code));
     assert.equal(new Set(codes).size, 24);
+  });
+
+  test("placeholders are listed; duplicate code words are rejected", () => {
+    const filled: HuntConfig = structuredClone(huntConfig);
+    filled.tracks[0].checkpoints[0].clue = "Go to {{zone}} and find {{person}}";
+    const todos = configTodos(filled).filter((t) => t.where === "Red Trail · CP1 clue");
+    assert.deepEqual(todos.map((t) => t.text), ["zone", "person"]);
+
+    const dup: HuntConfig = structuredClone(huntConfig);
+    dup.tracks[1].checkpoints[1].codeWord = "cappuccino";
+    assert.throws(() => validateConfig(dup), /codeWord "cappuccino" duplicates/);
   });
 
   test("duplicate or short codes are rejected", () => {

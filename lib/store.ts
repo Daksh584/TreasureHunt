@@ -13,6 +13,7 @@ export type LogResult =
   | "register"
   | "join"
   | "bad-join"
+  | "bad-word"
   | "rate-limited";
 
 export type LogEvent = {
@@ -26,6 +27,8 @@ export type LogEvent = {
   result: LogResult;
   /** Track the scanned checkpoint belongs to (shows up for wrong-track scans). */
   codeTrack?: TrackId | null;
+  /** How the checkpoint was unlocked. */
+  via?: "qr" | "word";
 };
 
 export type CreateTeamResult = "ok" | "name-taken";
@@ -339,16 +342,19 @@ export const store: HuntStore = (g.__huntStore ??= createStore());
 
 /* ---------- Light per-IP rate limiting ---------- */
 
-export type RateBucket = "fail" | "register";
+export type RateBucket = "fail" | "register" | "word";
 
 const LIMITS: Record<RateBucket, number> = {
   // Unknown checkpoint codes and bad join codes: stops brute-forcing.
   fail: Number(process.env.RATE_LIMIT_PER_MINUTE) || 30,
   // New team registrations: generous enough for a whole office behind one NAT IP.
   register: Number(process.env.REGISTER_LIMIT_PER_MINUTE) || 20,
+  // Wrong code words, counted per TEAM (key = team id), so guessing words is pointless.
+  word: 8,
 };
 const windowKey = (bucket: RateBucket, ip: string) => `hunt:rl:${bucket}:${ip}:${Math.floor(Date.now() / 60_000)}`;
 
+/** `ip` is the bucket subject: an IP address, or a team id for the "word" bucket. */
 export async function isRateLimited(ip: string, bucket: RateBucket = "fail", s: HuntStore = store): Promise<boolean> {
   return (await s.getCounter(windowKey(bucket, ip))) >= LIMITS[bucket];
 }

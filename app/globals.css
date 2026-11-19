@@ -268,6 +268,16 @@ button.danger {
 .code-input { text-transform: uppercase; letter-spacing: 0.2em; font-size: 1.5rem !important; text-align: center; }
 .cta-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
 
+.word-form { margin-top: 20px; padding-top: 18px; border-top: 1px dashed var(--line); display: grid; gap: 8px; }
+.word-form label { font-weight: 800; color: var(--accent); }
+.word-row { display: flex; gap: 8px; }
+.word-row input {
+  flex: 1; min-width: 0; font: inherit; font-size: 1.2rem; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 12px 14px; border-radius: 14px; border: 2px solid var(--line); min-height: 54px;
+}
+.word-row input:focus { outline: none; border-color: var(--accent); }
+.word-row .button { background: var(--accent); }
+
 /* ===== Teams: organizer side ===== */
 .button.go { background: var(--good); }
 .control-strip {
@@ -318,6 +328,20 @@ button.danger.small-btn { border: 0; }
 .poster-title { font-size: 2.2rem; margin: 6px 0 16px; letter-spacing: -0.02em; }
 .poster-qr svg { max-width: 320px; }
 .poster-steps { font-weight: 650; color: var(--ink-2); }
+
+/* Run sheet & to-dos */
+.todo-box { background: var(--warn-bg); color: var(--warn); border-radius: 16px; padding: 14px 18px; margin: 0 0 16px; }
+.todo-box summary { cursor: pointer; font-weight: 800; }
+.todo-box ul { margin: 10px 0 0; padding-left: 1.2em; color: var(--ink-2); }
+.todo-box code, .run-setup code { background: #fff8; padding: 1px 6px; border-radius: 6px; }
+.run-setup { display: block; margin-top: 4px; font-size: 0.85rem; color: var(--ink-2); background: #f4f1e8; border-radius: 8px; padding: 6px 8px; }
+.run-word { display: inline-block; margin-top: 4px; font-size: 0.8rem; font-weight: 800; background: var(--ink); color: #fff; border-radius: 6px; padding: 2px 8px; letter-spacing: 0.06em; }
+.todo-mark { background: #ffe08a; color: #5a3d00; border-radius: 4px; padding: 0 3px; }
+@media print {
+  .test-grid { grid-template-columns: 1fr 1fr; }
+  .test-track { break-inside: avoid; box-shadow: none; }
+  .join-list, .howto-list { display: none; }
+}
 
 /* ===== Animations ===== */
 @keyframes pulse { 50% { transform: scale(1.12); } }

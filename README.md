@@ -62,6 +62,21 @@ Optional env vars: `RATE_LIMIT_PER_MINUTE` (failed scans / wrong team codes per 
 
 **Redis usage:** a phone showing a clue costs ~3 Redis commands per refresh (every 15s, only while the screen is on); the leaderboard costs ~3 + one per team every 10s. A 2-hour hunt with ~40 teams fits comfortably in Upstash's free tier, but check your plan's monthly command limit for very large events.
 
+## Our event plan
+
+Configured in `hunt.config.ts`: up to **12 teams of 2–4** on **4 trails**, starting together in **BGL 15**. Each trail has 6 stops:
+
+1. A zone in BGL 15 → a colleague's **name tag** carries the QR
+2. A **cafeteria** in another building — Red: Costa (barista gives a code word) · Blue: Baskin Robbins (QR under a table) · Green: Butterfly (volunteer gives a code word) · Orange: BGL 16/17 cafeteria (volunteer holds the QR)
+3. **Outside** — a tree or a parking-lot pillar
+4. A **break room** (riddle)
+5. A **meeting room** — beat the game master's challenge for the QR / code word
+6. **Box Office** — final meeting place, one QR board per trail colour
+
+**Code words:** any checkpoint with a `codeWord` can be unlocked by typing the word on the phone instead of scanning. Wrong words are limited to 8 per team per minute.
+
+**Still to fill in:** everything written `{{like this}}` (zones, people, spots, rooms). The admin pages list every remaining placeholder. `/admin/test` doubles as a printable **run sheet** with each stop's setup notes and code word.
+
 ## Configuring the hunt
 
 Everything lives in [`hunt.config.ts`](./hunt.config.ts): hunt name, trail names/colours, intro texts, finish message, `maxTeams`, `autoStart`, and per-checkpoint `{ code, locationLabel, clue }`. Teams are **not** configured here — they register themselves.

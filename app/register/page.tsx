@@ -65,7 +65,10 @@ export default async function RegisterPage({
         </>
       ) : (
         <>
-          <p className="lede">One person registers; everyone else joins with the team code you’ll get next.</p>
+          <p className="lede">
+            Teams of {huntConfig.teamSize.min}–{huntConfig.teamSize.max} people. One person registers; everyone else joins
+            with the team code you’ll get next.
+          </p>
           {error && (
             <p className="banner banner-bad" role="alert">
               {ERRORS[error] ?? "Something went wrong. Please try again."}
